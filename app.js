@@ -1,3 +1,4 @@
+    
 const path = require("path");
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -9,17 +10,36 @@ const lineConfig = {
 const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input) {
-  // 3. 画像を返す
-
-  const appUrl = process.env.HEROKU_APP_URL;
-  return {
-    type: "image",
-    previewImageUrl: `${appUrl}images/question.png`,
-    originalContentUrl: `${appUrl}images/answer.png`
-  };
-
-  // メッセージオブジェクトに関する公式ドキュメント
-  // https://developers.line.me/ja/reference/messaging-api/#message-objects
+  const hands = ["グー", "チョキ", "パー"];
+  const messages = [];
+  let text = "";
+ 
+  function Message(text) {
+    this.type = "text";
+    this.text = text;
+  }
+  if (hands.indexOf(input) === -1) {
+    text = "グー・チョキ・パーのどれかを入力してね";
+    messages.push(new Message(text));
+  } else {
+    let user_hand = hands.indexOf(input);
+    let cpu_hand = Math.floor(hands.length * Math.random());
+    text = hands[cpu_hand];
+    messages.push(new Message(text));
+    let judge_text = "";
+    let judge = (user_hand - cpu_hand + 3) % 3; //じゃんけんの判定
+    if (judge === 0){                           //あいこ
+      judge_text = `aiko`;
+    } else if (judge === 1) {                   //botの勝ち
+      judge_text = `わいの勝ちや！`;
+    } else if (judge === 2) {                   //userの勝ち
+      judge_text = `負けた(;_;)`;
+    }
+    text = judge_text;
+    messages.push(new Message(text));
+  }
+  
+  return messages;
 }
 
 const server = express();
