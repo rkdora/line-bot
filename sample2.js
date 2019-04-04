@@ -9,7 +9,7 @@ const lineConfig = {
 const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input) {
-  // 2. オウム返しする
+  /// 2. オウム返しする
   return {
     type: "text",
     // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
