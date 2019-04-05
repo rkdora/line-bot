@@ -11,10 +11,9 @@ const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input) {
   const messages = [];
-  let text = "";
  
   console.log(input);
-  
+
   function Message(text) {
     this.type = "text";
     this.text = text;
@@ -28,12 +27,11 @@ function createReplyMessage(input) {
     }
   }
   
-  text = bunkai(input);
+  let input_str = bunkai(input);
 
-  messages.push(Message(text));
+  messages.push(Message(input_str.num));
+  messages.push(Message(input_str.tanni));
 
-  console.log(messages);
-  
   return messages;
 }
 
