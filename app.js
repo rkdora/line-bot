@@ -45,9 +45,9 @@ function createReplyMessage(input) {
   let message_text = "";
 
   if (!isValidInput(input)) {
-    message_text = "重さをわかりやすくたとえることができます。\n（例）「900g」と入力してみてください。\n現在対応している単位は[mg, g, kg, t]のいずれかです。";
+    message_text = "重さをわかりやすくたとえることができます。\n（例）「900g」と入力してみてください。\n現在対応している単位は[mg, g, kg, t]のいずれかです。\n小数点非対応";
   } else {
-    let input_str = bunkai(input);
+    var input_str = bunkai(input);
     switch (weightUnits.indexOf(input_str.tanni)) {
       case 0:       //mg
         message_text = `蚊${input_str.num}匹分の重さです。\n（1mg = 一般的な蚊の体重）`
