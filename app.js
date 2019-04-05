@@ -10,8 +10,10 @@ const lineConfig = {
 const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input) {
+  
   const messages = [];
- 
+  const weightUnits = ["mg", "g", "kg", "t"];
+
   function message(str) {
     return {
       type: "text",
@@ -26,11 +28,29 @@ function createReplyMessage(input) {
       tanni: tmp[2]
     }
   }
-  
-  let input_str = bunkai(input);
 
-  messages.push(message(input_str.num));
-  messages.push(message(input_str.tanni));
+  function isValidInput(str){
+    var tmp = /(\d+)(\D+)/.exec(str);
+    if (!tmp) return false;
+      
+    return !(weightUnits.indexOf(bunkai(str).tanni) === -1);
+  }
+  // > isValidInput("1g");
+  // true
+    // > isValidInput("1gg");
+  // false
+  // > isValidInput("1g1");<=================後で修正
+  // true
+
+  let message_text = "";
+
+  if (!isValidInput(input)) {
+    message_text = "重さをわかりやすくたとえることができます。\n（例）「900g」と入力してみてください。\n現在対応している単位は[mg, g, kg, t]のいずれかです。";
+  } else {
+    message_text = "有効な入力です";
+  }
+
+  messages.push(message(message_text));
 
   return messages;
 }
