@@ -13,6 +13,8 @@ function createReplyMessage(input) {
   const messages = [];
   let text = "";
  
+  console.log(input);
+  
   function Message(text) {
     this.type = "text";
     this.text = text;
@@ -30,7 +32,7 @@ function createReplyMessage(input) {
 
   messages.push(Message(text));
 
-  console.log(messages)
+  console.log(messages);
   
   return messages;
 }
