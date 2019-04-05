@@ -29,6 +29,8 @@ function createReplyMessage(input) {
   text = bunkai(input);
 
   messages.push(Message(text));
+
+  console.log(messages)
   
   return messages;
 }
