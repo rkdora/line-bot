@@ -32,6 +32,8 @@ function createReplyMessage(input) {
   messages.push(Message(input_str.num));
   messages.push(Message(input_str.tanni));
 
+  console.log(messages);
+
   return messages;
 }
 
