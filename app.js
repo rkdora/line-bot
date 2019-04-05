@@ -50,16 +50,16 @@ function createReplyMessage(input) {
     var input_str = bunkai(input);
     switch (weightUnits.indexOf(input_str.tanni)) {
       case 0:       //mg
-        message_text = `蚊${input_str.num}匹分の重さです。\n（1mg = 一般的な蚊の体重）`
+        message_text = `蚊${input_str.num}匹分の重さです。\n（1mg = 一般的な蚊の体重）`;
         break;
       case 1:       //g
-        message_text = `一円硬貨${input_str.num}枚分の重さです。\n（1g = 一円硬貨の重量）`
+        message_text = `一円硬貨${input_str.num}枚分の重さです。\n（1g = 一円硬貨の重量）`;
         break;
       case 2:       //kg
-        message_text = `電話帳${input_str.num}冊分の重さです。\n（1kg = 一般的な電話帳の重量）`
+        message_text = `電話帳${input_str.num}冊分の重さです。\n（1kg = 一般的な電話帳の重量）`;
         break;
       case 3:       //t
-        message_text = `水の入った2ℓのペットボトル${String(parseInt(input_str.num)*500)}本分の重さです。\n（1t = 水の入った2ℓのペットボトル500本分）`
+        message_text = `水の入った2ℓのペットボトル${String(parseInt(input_str.num)*500)}本分の重さです。\n（1t = 水の入った2ℓのペットボトル500本分）`;
         break;
     }
   }
