@@ -31,16 +31,18 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
   res.sendStatus(200);
 
   for (const event of req.body.events) {
+    const profile = lineClient.getProfile(event.source.userId)
     if (event.type === "message" && event.message.type === "text") {
-      lineClient.getProfile(event.source.userId)
-      .then((profile) => {
-        name = profile.displayName;
-        const message = createReplyMessage(event.message.text, name);
-        lineClient.replyMessage(event.replyToken, message);
-        console.log(profile.userId);
-        console.log(profile.pictureUrl);
-        console.log(profile.statusMessage);
-      });
+      // lineClient.getProfile(event.source.userId)
+      // .then((profile) => {
+      //   name = profile.displayName;
+        
+      //   console.log(profile.userId);
+      //   console.log(profile.pictureUrl);
+      //   console.log(profile.statusMessage);
+      // });
+      const message = createReplyMessage(event.message.text, profile.displayName);
+      lineClient.replyMessage(event.replyToken, message);
     }
   }
 });
