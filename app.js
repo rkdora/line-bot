@@ -23,6 +23,7 @@ function createReplyMessage(input, name) {
 function getProfileUser(userid) {
   lineClient.getProfile(userid)
   .then((profile) => {
+    console.log(profile.displayName);
     return {
       name: profile.displayName
     }
