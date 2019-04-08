@@ -1,7 +1,7 @@
-    
 const path = require("path");
 const express = require("express");
 const line = require("@line/bot-sdk");
+const axios = require("axios");
 
 const lineConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
@@ -9,78 +9,57 @@ const lineConfig = {
 };
 const lineClient = new line.Client(lineConfig);
 
-function createReplyMessage(input) {
-  
-  const messages = [];
-  const weightUnits = ["mg", "g", "kg", "t"];
+async function createReplyMessage(input) {
+  // Yahoo! 郵便番号検索API
+  // https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/zipcodesearch.html#response_field
+  const params = {
+    appid: process.env.YJDN_CLIENT_ID,
+    query: input,
+    output: "json",
+    results: 1
+  };
+  const { data } = await axios.get(
+    "https://map.yahooapis.jp/search/zip/V1/zipCodeSearch",
+    { params }
+  );
 
-  function message(str) {
+  if (data.ResultInfo.Count === 0) {
     return {
       type: "text",
-      text: str
-    }
+      text: `「${input}」の検索結果は0件でした。`
+    };
   }
 
-  function bunkai(str) {
-    var tmp = /(\d+)(\D+)/.exec(str);
-    return {
-      num: tmp[1],
-      tanni: tmp[2]
-    }
-  }
+  const feature = data.Feature[0];
+  const property = feature.Property;
+  const address = property.Address;
+  const station = property.Station && property.Station[0];
+  const stationName = station ? `${station.Railway} ${station.Name}` : "なし";
 
-  function isValidInput(str){
-    var tmp = /(\d+)(\D+)/.exec(str);
-    if (!tmp) return false;
-      
-    return !(weightUnits.indexOf(bunkai(str).tanni) === -1);
-  }
-  // > isValidInput("1g");
-  // true
-    // > isValidInput("1gg");
-  // false
-  // > isValidInput("1g1");<=================後で修正
-  // true
-
-  let message_text = "";
-
-  if (!isValidInput(input)) {
-    message_text = "重さをわかりやすくたとえることができます。\n（例）「900g」と入力してみてください。\n現在対応している単位は[mg, g, kg, t]のいずれかです。\n小数点非対応";
-  } else {
-    var input_str = bunkai(input);
-    switch (weightUnits.indexOf(input_str.tanni)) {
-      case 0:       //mg
-        message_text = `蚊${input_str.num}匹分の重さです。\n（1mg = 一般的な蚊の体重）`;
-        break;
-      case 1:       //g
-        message_text = `一円硬貨${input_str.num}枚分の重さです。\n（1g = 一円硬貨の重量）`;
-        break;
-      case 2:       //kg
-        message_text = `電話帳${input_str.num}冊分の重さです。\n（1kg = 一般的な電話帳の重量）`;
-        break;
-      case 3:       //t
-        message_text = `水の入った2ℓのペットボトル${String(parseInt(input_str.num)*500)}本分の重さです。\n（1t = 水の入った2ℓのペットボトル500本分）`;
-        break;
-    }
-  }
-
-  messages.push(message(message_text));
-
-  return messages;
+  return {
+    type: "text",
+    text: `住所は「${address}」、最寄り駅は「${stationName}」です。`
+  };
 }
 
 const server = express();
 
 server.use("/images", express.static(path.join(__dirname, "images")));
 
-server.post("/webhook", line.middleware(lineConfig), (req, res) => {
+server.post("/webhook", line.middleware(lineConfig), async (req, res) => {
   // LINEのサーバーに200を返す
   res.sendStatus(200);
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      const message = createReplyMessage(event.message.text);
-      lineClient.replyMessage(event.replyToken, message);
+      try {
+        const message = await createReplyMessage(event.message.text);
+        lineClient.replyMessage(event.replyToken, message);
+      } catch (err) {
+        console.log("エラー発生！", err.message, err.stack);
+        console.log(err.message);
+        console.log(err.stack);
+      }
     }
   }
 });
