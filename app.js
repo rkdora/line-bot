@@ -8,13 +8,20 @@ const lineConfig = {
 };
 const lineClient = new line.Client(lineConfig);
 
-function createReplyMessage(input) {
+function createReplyMessage(input, userid) {
+  client.getProfile(userid)
+  .then((profile) => {
+    console.log(profile.displayName);
+    console.log(profile.userId);
+    console.log(profile.pictureUrl);
+    console.log(profile.statusMessage);
+  })
   /// 2. オウム返しする
   return {
     type: "text",
     // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
     // テンプレートリテラル（Template literal）という文法です
-    text: `${input}、と言いましたね？`
+    text: `${profile.displayName}、desune？`
     // 以下と同じです
     // text: input + '、と言いましたね？'
   };
@@ -30,9 +37,8 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      const message = createReplyMessage(event.message.text);
+      const message = createReplyMessage(event.message.text, event.source.userId);
       lineClient.replyMessage(event.replyToken, message);
-      console.log(event.source.userId);
     }
   }
 });
