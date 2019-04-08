@@ -20,13 +20,6 @@ function createReplyMessage(input, name) {
   };
 }
 
-function getProfileUserName(userid) {
-  lineClient.getProfile(userid)
-  .then((profile) => {
-    return profile.displayName
-  });
-}
-
 const server = express();
 
 server.use("/images", express.static(path.join(__dirname, "images")));
@@ -37,10 +30,11 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      const userName = getProfileUserName(event.source.userId);
-      console.log(userName);
-      const message = createReplyMessage(event.message.text, userName);
-      lineClient.replyMessage(event.replyToken, message);
+      lineClient.getProfile(event.source.userId)
+      .then((profile) => {
+        const message = createReplyMessage(event.message.text, profile.displayName);
+        lineClient.replyMessage(event.replyToken, message);
+      });
     }
   }
 });
