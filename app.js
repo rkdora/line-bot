@@ -10,7 +10,7 @@ const lineClient = new line.Client(lineConfig);
 
 let name = "";
 
-function createReplyMessage(input, userid) {
+function createReplyMessage(input, name) {
   /// 2. オウム返しする
   return {
     type: "text",
