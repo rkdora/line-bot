@@ -20,13 +20,10 @@ function createReplyMessage(input, name) {
   };
 }
 
-function getProfileUser(userid) {
+function getProfileUserName(userid) {
   lineClient.getProfile(userid)
   .then((profile) => {
-    console.log(profile.displayName);
-    return {
-      name: profile.displayName
-    }
+    return profile.displayName
   });
 }
 
@@ -40,9 +37,9 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      const user = getProfileUser(event.source.userId);
-      console.log(user);
-      const message = createReplyMessage(event.message.text, user.name);
+      const userName = getProfileUserName(event.source.userId);
+      console.log(userName);
+      const message = createReplyMessage(event.message.text, userName);
       lineClient.replyMessage(event.replyToken, message);
     }
   }
