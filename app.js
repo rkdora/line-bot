@@ -21,7 +21,7 @@ function createReplyMessage(input, userid) {
     type: "text",
     // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
     // テンプレートリテラル（Template literal）という文法です
-    text: `${lineClient.getProfile(userid).displayName}で${input}、desune？`
+    text: `${lineClient.getProfile(userid).profile.displayName}で${input}、desune？`
     // 以下と同じです
     // text: input + '、と言いましたね？'
   };
