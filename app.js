@@ -8,8 +8,6 @@ const lineConfig = {
 };
 const lineClient = new line.Client(lineConfig);
 
-let name = "";
-
 function createReplyMessage(input, name) {
   /// 2. オウム返しする
   return {
