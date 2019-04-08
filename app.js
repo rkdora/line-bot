@@ -1,7 +1,6 @@
 const path = require("path");
 const express = require("express");
 const line = require("@line/bot-sdk");
-const axios = require("axios");
 
 const lineConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
@@ -9,36 +8,19 @@ const lineConfig = {
 };
 const lineClient = new line.Client(lineConfig);
 
-async function createReplyMessage(input) {
-  // Yahoo! 郵便番号検索API
-  // https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/zipcodesearch.html#response_field
-  const params = {
-    appid: process.env.YJDN_CLIENT_ID,
-    query: input,
-    output: "json",
-    results: 1
-  };
-  const { data } = await axios.get(
-    "https://map.yahooapis.jp/search/zip/V1/zipCodeSearch",
-    { params }
-  );
+function createReplyMessage(input) {
 
-  if (data.ResultInfo.Count === 0) {
-    return {
-      type: "text",
-      text: `「${input}」の検索結果は0件でした。`
-    };
-  }
-
-  const feature = data.Feature[0];
-  const property = feature.Property;
-  const address = property.Address;
-  const station = property.Station && property.Station[0];
-  const stationName = station ? `${station.Railway} ${station.Name}` : "なし";
-
+  client.getProfile('user_id').then((profile) => {
+    console.log(profile);
+  });
+  /// 2. オウム返しする
   return {
     type: "text",
-    text: `住所は「${address}」、最寄り駅は「${stationName}」です。`
+    // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
+    // テンプレートリテラル（Template literal）という文法です
+    text: `${input}、と言いましたね？`
+    // 以下と同じです
+    // text: input + '、と言いましたね？'
   };
 }
 
@@ -46,20 +28,14 @@ const server = express();
 
 server.use("/images", express.static(path.join(__dirname, "images")));
 
-server.post("/webhook", line.middleware(lineConfig), async (req, res) => {
+server.post("/webhook", line.middleware(lineConfig), (req, res) => {
   // LINEのサーバーに200を返す
   res.sendStatus(200);
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      try {
-        const message = await createReplyMessage(event.message.text);
-        lineClient.replyMessage(event.replyToken, message);
-      } catch (err) {
-        console.log("エラー発生！", err.message, err.stack);
-        console.log(err.message);
-        console.log(err.stack);
-      }
+      const message = createReplyMessage(event.message.text);
+      lineClient.replyMessage(event.replyToken, message);
     }
   }
 });
