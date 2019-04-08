@@ -9,9 +9,10 @@ const lineConfig = {
 const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input, userid) {
+  let name = "";
   lineClient.getProfile(userid)
   .then((profile) => {
-    console.log(profile.displayName);
+    name = profile.displayName;
     console.log(profile.userId);
     console.log(profile.pictureUrl);
     console.log(profile.statusMessage);
@@ -21,7 +22,7 @@ function createReplyMessage(input, userid) {
     type: "text",
     // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
     // テンプレートリテラル（Template literal）という文法です
-    text: `${lineClient.getProfile(userid).profile.displayName}で${input}、desune？`
+    text: `${name}で${input}、desune？`
     // 以下と同じです
     // text: input + '、と言いましたね？'
   };
