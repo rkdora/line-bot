@@ -41,6 +41,7 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
       //   console.log(profile.pictureUrl);
       //   console.log(profile.statusMessage);
       // });
+      console.log(profile.deisplayName);
       const message = createReplyMessage(event.message.text, profile.displayName);
       lineClient.replyMessage(event.replyToken, message);
     }
