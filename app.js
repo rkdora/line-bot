@@ -31,7 +31,7 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
   res.sendStatus(200);
 
   for (const event of req.body.events) {
-    const profile = lineClient.getProfile(event.source.userId)
+    const profile = lineClient.get_profile(event.source.userId)
     if (event.type === "message" && event.message.type === "text") {
       // lineClient.getProfile(event.source.userId)
       // .then((profile) => {
