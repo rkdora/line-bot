@@ -8,6 +8,8 @@ const lineConfig = {
 };
 const lineClient = new line.Client(lineConfig);
 
+let name = "";
+
 function createReplyMessage(input, name) {
   /// 2. オウム返しする
   return {
@@ -30,16 +32,15 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      const profile = lineClient.getProfile(event.source.userId)
-      // .then((profile) => {
-      //   name = profile.displayName;
-        
-      //   console.log(profile.userId);
-      //   console.log(profile.pictureUrl);
-      //   console.log(profile.statusMessage);
-      // });
-      const message = createReplyMessage(event.message.text, profile.displayName);
-      lineClient.replyMessage(event.replyToken, message);
+      lineClient.getProfile(event.source.userId)
+      .then((profile) => {
+        name = profile.displayName;
+        const message = createReplyMessage(event.message.text, name);
+        lineClient.replyMessage(event.replyToken, message);
+        console.log(profile.userId);
+        console.log(profile.pictureUrl);
+        console.log(profile.statusMessage);
+      });
     }
   }
 });
