@@ -8,11 +8,8 @@ const lineConfig = {
 };
 const lineClient = new line.Client(lineConfig);
 
-function createReplyMessage(input, userId) {
-
-  client.getProfile(userId).then((profile) => {
-    console.log(profile);
-  });
+function createReplyMessage(input) {
+  console.log(lineClient);
   /// 2. オウム返しする
   return {
     type: "text",
@@ -34,7 +31,7 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
 
   for (const event of req.body.events) {
     if (event.type === "message" && event.message.type === "text") {
-      const message = createReplyMessage(event.message.text, event.message.userId);
+      const message = createReplyMessage(event.message.text);
       lineClient.replyMessage(event.replyToken, message);
     }
   }
