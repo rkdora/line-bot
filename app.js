@@ -35,12 +35,13 @@ server.post("/webhook", line.middleware(lineConfig), (req, res) => {
       lineClient.getProfile(event.source.userId)
       .then((profile) => {
         name = profile.displayName;
+        const message = createReplyMessage(event.message.text, name);
+        lineClient.replyMessage(event.replyToken, message);
         console.log(profile.userId);
         console.log(profile.pictureUrl);
         console.log(profile.statusMessage);
       });
-      const message = createReplyMessage(event.message.text, name);
-      lineClient.replyMessage(event.replyToken, message);
+      
     }
   }
 });
