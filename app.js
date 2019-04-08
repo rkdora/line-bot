@@ -9,23 +9,23 @@ const lineConfig = {
 const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input, userid) {
-  let name = "";
   lineClient.getProfile(userid)
   .then((profile) => {
+    return {
+      type: "text",
+      // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
+      // テンプレートリテラル（Template literal）という文法です
+      text: `${profile.displayName}で${input}、desune？`
+      // 以下と同じです
+      // text: input + '、と言いましたね？'
+    };
     name = profile.displayName;
     console.log(profile.userId);
     console.log(profile.pictureUrl);
     console.log(profile.statusMessage);
   })
   /// 2. オウム返しする
-  return {
-    type: "text",
-    // `（バッククォート）で囲った中で${変数名}や${式}を書くと結果が展開される
-    // テンプレートリテラル（Template literal）という文法です
-    text: `${name}で${input}、desune？`
-    // 以下と同じです
-    // text: input + '、と言いましたね？'
-  };
+  
 }
 
 const server = express();
