@@ -9,7 +9,7 @@ const lineConfig = {
 const lineClient = new line.Client(lineConfig);
 
 function createReplyMessage(input, userid) {
-  client.getProfile(userid)
+  lineClient.getProfile(userid)
   .then((profile) => {
     console.log(profile.displayName);
     console.log(profile.userId);
